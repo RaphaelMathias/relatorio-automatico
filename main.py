@@ -43,26 +43,34 @@ class Main:
 
 
     mais_vendido_grafico = df.groupby('produto')['vendas'].sum()
+    faturamento_por_produto = df.groupby('produto')['faturamento'].sum()
 
-
+ # Grafico de mais vendidos
     plt.figure(figsize=(10,6))
     mais_vendido_grafico.plot(kind='bar', color='skyblue')
-
     plt.title('Grafico de vendas')
     plt.xlabel('produto')
     plt.ylabel('quantidade de vendas')
-
     plt.xticks(rotation=45)
-
-
     plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     plt.ylim(0, max(mais_vendido_grafico) + 5)
-
-
-
     plt.tight_layout()
-    plt.savefig('Grafico.png')
+    plt.savefig('Grafico_de_vendas.png')
     plt.show()
+
+    # Grafico de faturamento
+    plt.figure(figsize=(10,6))
+    faturamento_por_produto.plot(kind='bar', color='green')
+    plt.title('Grafico de Faturamento')
+    plt.xlabel('produto')
+    plt.ylabel('Faturamento')
+    plt.xticks(rotation=45)
+    plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    plt.ylim(0, max(faturamento_por_produto) + 5)
+    plt.tight_layout()
+    plt.savefig('Grafico_de_faturamento.png')
+    plt.show()
+
 
 
     mensagem = EmailMessage()
@@ -71,14 +79,25 @@ class Main:
     mensagem['Subject'] = assunto
     mensagem.set_content(corpo)
 
-    with open('Grafico.png', 'rb') as arquivo:
+    with open('Grafico_de_vendas.png', 'rb') as arquivo:
         conteudo = arquivo.read()
         mensagem.add_attachment(
             conteudo,
             maintype='image',
             subtype='png',
-            filename='Grafico.png'
+            filename='Grafico_de_vendas.png'
         )
+
+
+    with open('Grafico_de_faturamento.png', 'rb') as arquivo:
+        conteudo = arquivo.read()
+        mensagem.add_attachment(
+            conteudo,
+            maintype='image',
+            subtype='png',
+            filename='Grafico_de_faturamento.png'
+        )
+
 
     contexto = ssl.create_default_context()
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=contexto) as servidor:
